@@ -1,0 +1,3 @@
+(library
+ (name justified_map)
+ (libraries base))

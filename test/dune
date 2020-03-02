@@ -1,0 +1,6 @@
+(library
+ (name justified_map_test)
+ (libraries core_kernel expect_test_helpers_kernel justified_map)
+ (inline_tests)
+ (preprocess
+  (pps ppx_jane)))

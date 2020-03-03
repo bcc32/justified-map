@@ -46,9 +46,3 @@ val mapi
   :  ('k, 'v1, 'cmp, 'ph) t
   -> f:(key:('k, 'ph) Key.t -> data:'v1 -> 'v2)
   -> ('k, 'v2, 'cmp, 'ph) t
-
-val foldi
-  :  ('k, 'v, 'cmp, 'ph) t
-  -> init:'a
-  -> f:('a -> key:('k, 'ph) Key.t -> data:'v -> 'a)
-  -> 'a

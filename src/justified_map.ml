@@ -54,4 +54,3 @@ let updatei t key ~f =
 
 let set = Map.set
 let mapi = Map.mapi
-let foldi t ~init ~f = Map.fold t ~init ~f:(fun ~key ~data accum -> f accum ~key ~data)

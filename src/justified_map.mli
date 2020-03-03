@@ -1,12 +1,14 @@
 open! Base
 
-type ('k, 'v, 'cmp, 'ph) t
+type ('k, 'v, 'cmp, 'ph) t = private ('k, 'v, 'cmp) Map.t
+type ('k, 'v, 'cmp, 'ph) unpacked := ('k, 'v, 'cmp, 'ph) t
+
+module Packed : sig
+  type ('k, 'v, 'cmp) t = T : ('k, 'v, 'cmp, 'ph) unpacked -> ('k, 'v, 'cmp) t
+  [@@unboxed]
+end
 
 val to_map : ('k, 'v, 'cmp, 'ph) t -> ('k, 'v, 'cmp) Map.t
-
-module Handler : sig
-  type nonrec ('k, 'v, 'cmp, 'a) t = { f : 'ph. ('k, 'v, 'cmp, 'ph) t -> 'a } [@@unboxed]
-end
 
 module Key : sig
   type ('k, 'ph) t
@@ -14,7 +16,7 @@ module Key : sig
   val get : ('k, _) t -> 'k
 end
 
-val with_map : ('k, 'v, 'cmp) Map.t -> ('k, 'v, 'cmp, 'a) Handler.t -> 'a
+val with_map : ('k, 'v, 'cmp) Map.t -> f:(('k, 'v, 'cmp) Packed.t -> 'a) -> 'a
 val mem : ('k, _, _, 'ph) t -> 'k -> ('k, 'ph) Key.t option
 val keys : ('k, _, _, 'ph) t -> ('k, 'ph) Key.t list
 val find : ('k, 'v, _, 'ph) t -> ('k, 'ph) Key.t -> 'v

@@ -1,9 +1,11 @@
 open! Base
 
 type ('k, 'v, 'cmp, 'ph) t = ('k, 'v, 'cmp) Map.t
+type ('k, 'v, 'cmp, 'ph) unpacked = ('k, 'v, 'cmp, 'ph) t
 
-module Handler = struct
-  type nonrec ('k, 'v, 'cmp, 'a) t = { f : 'ph. ('k, 'v, 'cmp, 'ph) t -> 'a } [@@unboxed]
+module Packed = struct
+  type ('k, 'v, 'cmp) t = T : ('k, 'v, 'cmp, 'ph) unpacked -> ('k, 'v, 'cmp) t
+  [@@unboxed]
 end
 
 module Key = struct
@@ -21,7 +23,7 @@ let[@cold] raise_key_unexpectedly_not_in_map (type k cmp) (map : (k, _, cmp) Map
 ;;
 
 let to_map = Fn.id
-let with_map map ({ f } : _ Handler.t) = f map
+let with_map map ~f = f (Packed.T map)
 
 let mem t k =
   match Map.mem t k with

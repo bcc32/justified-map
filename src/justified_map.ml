@@ -38,6 +38,7 @@ let find t key =
 ;;
 
 let keys = Map.keys
+let closest_key = Map.closest_key
 
 let update t key ~f =
   Map.update t key ~f:(function

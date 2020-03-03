@@ -19,6 +19,13 @@ end
 val with_map : ('k, 'v, 'cmp) Map.t -> f:(('k, 'v, 'cmp) Packed.t -> 'a) -> 'a
 val mem : ('k, _, _, 'ph) t -> 'k -> ('k, 'ph) Key.t option
 val keys : ('k, _, _, 'ph) t -> ('k, 'ph) Key.t list
+
+val closest_key
+  :  ('k, 'v, _, 'ph) t
+  -> [ `Greater_or_equal_to | `Greater_than | `Less_or_equal_to | `Less_than ]
+  -> 'k
+  -> (('k, 'ph) Key.t * 'v) option
+
 val find : ('k, 'v, _, 'ph) t -> ('k, 'ph) Key.t -> 'v
 
 val update

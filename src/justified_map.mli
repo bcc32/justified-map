@@ -1,12 +1,9 @@
 open! Base
 
-type ('k, 'v, 'cmp, 'ph) t = private ('k, 'v, 'cmp) Map.t
-type ('k, 'v, 'cmp, 'ph) unpacked := ('k, 'v, 'cmp, 'ph) t
+(** {1 Map and Key types} *)
 
-module Packed : sig
-  type ('k, 'v, 'cmp) t = T : ('k, 'v, 'cmp, 'ph) unpacked -> ('k, 'v, 'cmp) t
-  [@@unboxed]
-end
+type ('k, 'v, 'cmp, 'ph) t = private ('k, 'v, 'cmp) Map.t
+type ('k, 'v, 'cmp, 'ph) justified_map := ('k, 'v, 'cmp, 'ph) t
 
 val to_map : ('k, 'v, 'cmp, 'ph) t -> ('k, 'v, 'cmp) Map.t
 
@@ -16,7 +13,27 @@ module Key : sig
   val get : ('k, _) t -> 'k
 end
 
-val with_map : ('k, 'v, 'cmp) Map.t -> f:(('k, 'v, 'cmp) Packed.t -> 'a) -> 'a
+(** {1 Evaluation} *)
+
+module With_map : sig
+  type ('k, 'v, 'cmp) t = T : ('k, 'v, 'cmp, 'ph) justified_map -> ('k, 'v, 'cmp) t
+  [@@unboxed]
+end
+
+val with_map : ('k, 'v, 'cmp) Map.t -> f:(('k, 'v, 'cmp) With_map.t -> 'a) -> 'a
+
+module With_singleton : sig
+  type ('k, 'v, 'cmp) t =
+    | T : ('k, 'ph) Key.t * ('k, 'v, 'cmp, 'ph) justified_map -> ('k, 'v, 'cmp) t
+end
+
+val with_singleton
+  :  ('k, 'cmp) Map.comparator
+  -> key:'k
+  -> data:'v
+  -> f:(('k, 'v, 'cmp) With_singleton.t -> 'a)
+  -> 'a
+
 val mem : ('k, _, _, 'ph) t -> 'k -> ('k, 'ph) Key.t option
 val keys : ('k, _, _, 'ph) t -> ('k, 'ph) Key.t list
 

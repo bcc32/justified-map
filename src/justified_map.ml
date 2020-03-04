@@ -1,12 +1,7 @@
 open! Base
 
 type ('k, 'v, 'cmp, 'ph) t = ('k, 'v, 'cmp) Map.t
-type ('k, 'v, 'cmp, 'ph) unpacked = ('k, 'v, 'cmp, 'ph) t
-
-module Packed = struct
-  type ('k, 'v, 'cmp) t = T : ('k, 'v, 'cmp, 'ph) unpacked -> ('k, 'v, 'cmp) t
-  [@@unboxed]
-end
+type ('k, 'v, 'cmp, 'ph) justified_map = ('k, 'v, 'cmp, 'ph) t
 
 module Key = struct
   type ('k, 'ph) t = 'k
@@ -23,7 +18,22 @@ let[@cold] raise_key_unexpectedly_not_in_map (type k cmp) (map : (k, _, cmp) Map
 ;;
 
 let to_map = Fn.id
-let with_map map ~f = f (Packed.T map)
+
+module With_map = struct
+  type ('k, 'v, 'cmp) t = T : ('k, 'v, 'cmp, 'ph) justified_map -> ('k, 'v, 'cmp) t
+  [@@unboxed]
+end
+
+let with_map map ~f = f (With_map.T map)
+
+module With_singleton = struct
+  type ('k, 'v, 'cmp) t =
+    | T : ('k, 'ph) Key.t * ('k, 'v, 'cmp, 'ph) justified_map -> ('k, 'v, 'cmp) t
+end
+
+let with_singleton comparator ~key ~data ~f =
+  f (With_singleton.T (key, Map.singleton comparator key data))
+;;
 
 let mem t k =
   match Map.mem t k with

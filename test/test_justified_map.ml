@@ -22,3 +22,12 @@ let%expect_test "basic usage" =
     in
     [%expect {| |}])
 ;;
+
+let%expect_test "with_singleton example" =
+  Justified_map.with_singleton
+    (module Int)
+    ~key:1
+    ~data:'a'
+    ~f:(fun (T (key, map)) -> printf "%c\n" (Justified_map.find map key));
+  [%expect {| a |}]
+;;

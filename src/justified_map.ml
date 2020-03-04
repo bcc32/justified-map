@@ -66,3 +66,14 @@ let updatei t key ~f =
 let set = Map.set
 let[@inline always] ( .%{}<- ) t key data = set t ~key ~data
 let mapi = Map.mapi
+
+(* TODO: This would be more efficient if [Base.Map.folding_mapi] existed. *)
+
+let folding_mapi t ~init ~f =
+  Map.fold
+    t
+    ~init:(init, Map.empty (Map.comparator_s t))
+    ~f:(fun ~key ~data (accum, map) ->
+      let accum, elt = f accum ~key ~data in
+      accum, Map.add_exn map ~key ~data:elt)
+;;

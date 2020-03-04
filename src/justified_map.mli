@@ -75,3 +75,9 @@ val mapi
   :  ('k, 'v1, 'cmp, 'ph) t
   -> f:(key:('k, 'ph) Key.t -> data:'v1 -> 'v2)
   -> ('k, 'v2, 'cmp, 'ph) t
+
+val folding_mapi
+  :  ('k, 'v1, 'cmp, 'ph) t
+  -> init:'accum
+  -> f:('accum -> key:('k, 'ph) Key.t -> data:'v1 -> 'accum * 'v2)
+  -> 'accum * ('k, 'v2, 'cmp, 'ph) t

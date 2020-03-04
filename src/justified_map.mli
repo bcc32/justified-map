@@ -8,7 +8,7 @@ type ('k, 'v, 'cmp, 'ph) justified_map := ('k, 'v, 'cmp, 'ph) t
 val to_map : ('k, 'v, 'cmp, 'ph) t -> ('k, 'v, 'cmp) Map.t
 
 module Key : sig
-  type ('k, 'ph) t
+  type ('k, 'ph) t = private 'k
 
   val get : ('k, _) t -> 'k
 end

@@ -34,6 +34,8 @@ val with_singleton
   -> f:(('k, 'v, 'cmp) With_singleton.t -> 'a)
   -> 'a
 
+(** {1 Gathering evidence} *)
+
 val mem : ('k, _, _, 'ph) t -> 'k -> ('k, 'ph) Key.t option
 val keys : ('k, _, _, 'ph) t -> ('k, 'ph) Key.t list
 
@@ -43,7 +45,14 @@ val closest_key
   -> 'k
   -> (('k, 'ph) Key.t * 'v) option
 
+(** {1 Safe lookup} *)
+
 val find : ('k, 'v, _, 'ph) t -> ('k, 'ph) Key.t -> 'v
+val ( .%{} ) : ('k, 'v, _, 'ph) t -> ('k, 'ph) Key.t -> 'v
+
+(** {1 Preserving key sets} *)
+
+(** {2 Localized updates} *)
 
 val update
   :  ('k, 'v, 'cmp, 'ph) t
@@ -58,6 +67,9 @@ val updatei
   -> ('k, 'v, 'cmp, 'ph) t
 
 val set : ('k, 'v, 'cmp, 'ph) t -> key:('k, 'ph) Key.t -> data:'v -> ('k, 'v, 'cmp, 'ph) t
+val ( .%{}<- ) : ('k, 'v, 'cmp, 'ph) t -> ('k, 'ph) Key.t -> 'v -> ('k, 'v, 'cmp, 'ph) t
+
+(** {2 Mapping values} *)
 
 val mapi
   :  ('k, 'v1, 'cmp, 'ph) t

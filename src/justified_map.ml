@@ -47,6 +47,7 @@ let find t key =
   | exception _ -> raise_key_unexpectedly_not_in_map t key
 ;;
 
+let ( .%{} ) = find
 let keys = Map.keys
 let closest_key = Map.closest_key
 
@@ -63,4 +64,5 @@ let updatei t key ~f =
 ;;
 
 let set = Map.set
+let[@inline always] ( .%{}<- ) t key data = set t ~key ~data
 let mapi = Map.mapi

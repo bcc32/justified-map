@@ -37,6 +37,7 @@ val with_singleton
 (** {1 Gathering evidence} *)
 
 val mem : ('k, _, _, 'ph) t -> 'k -> ('k, 'ph) Key.t option
+val mem_exn : ('k, _, _, 'ph) t -> 'k -> ('k, 'ph) Key.t
 val keys : ('k, _, _, 'ph) t -> ('k, 'ph) Key.t list
 
 val closest_key
@@ -81,3 +82,33 @@ val folding_mapi
   -> init:'accum
   -> f:('accum -> key:('k, 'ph) Key.t -> data:'v1 -> 'accum * 'v2)
   -> 'accum * ('k, 'v2, 'cmp, 'ph) t
+
+(** {2 Zipping} *)
+
+val merge
+  :  ('k, 'v1, 'cmp, 'ph) t
+  -> ('k, 'v2, 'cmp, 'ph) t
+  -> f:(key:('k, 'ph) Key.t -> 'v1 -> 'v2 -> 'v)
+  -> ('k, 'v, 'cmp, 'ph) t
+
+(** {1 Enlarging key sets} *)
+
+(** {2 Inserting new keys} *)
+
+module Inserting : sig
+  (* TODO: Consider the naming of these record fields. *)
+  type ('k, 'v, 'cmp, 'ph1) t =
+    | T :
+        { key : ('k, 'ph2) Key.t
+        ; infer : ('k, 'ph1) Key.t -> ('k, 'ph2) Key.t
+        ; map : ('k, 'v, 'cmp, 'ph2) justified_map
+        }
+        -> ('k, 'v, 'cmp, 'ph1) t
+end
+
+val inserting
+  :  ('k, 'v, 'cmp, 'ph) t
+  -> key:'k
+  -> data:'v
+  -> f:(('k, 'v, 'cmp, 'ph) Inserting.t -> 'a)
+  -> 'a

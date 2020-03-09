@@ -112,3 +112,11 @@ val inserting
   -> data:'v
   -> f:(('k, 'v, 'cmp, 'ph) Inserting.t -> 'a)
   -> 'a
+
+val inserting_with
+  :  ('k, 'v, 'cmp, 'ph) t
+  -> key:'k
+  -> data:'v
+  -> combine:(old_data:'v -> new_data:'v -> 'v)
+  -> f:(('k, 'v, 'cmp, 'ph) Inserting.t -> 'a)
+  -> 'a

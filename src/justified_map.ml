@@ -114,3 +114,15 @@ end
 let inserting t ~key ~data ~f =
   f (Inserting.T { key; infer = Fn.id; map = Map.set t ~key ~data })
 ;;
+
+let inserting_with t ~key ~data:new_data ~combine ~f =
+  f
+    (Inserting.T
+       { key
+       ; infer = Fn.id
+       ; map =
+           Map.update t key ~f:(function
+             | None -> new_data
+             | Some old_data -> combine ~old_data ~new_data)
+       })
+;;

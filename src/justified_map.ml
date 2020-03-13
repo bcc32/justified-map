@@ -126,3 +126,25 @@ let inserting_with t ~key ~data:new_data ~combine ~f =
              | Some old_data -> combine ~old_data ~new_data)
        })
 ;;
+
+module Unioning = struct
+  type ('k, 'v, 'cmp, 'ph_l, 'ph_r) t =
+    | T :
+        { infer_left : ('k, 'ph_l) Key.t -> ('k, 'ph_union) Key.t
+        ; infer_right : ('k, 'ph_r) Key.t -> ('k, 'ph_union) Key.t
+        ; map : ('k, 'v, 'cmp, 'ph_union) justified_map
+        }
+        -> ('k, 'v, 'cmp, 'ph_l, 'ph_r) t
+end
+
+let unioning t1 t2 ~f =
+  f
+    (Unioning.T
+       { infer_left = Fn.id
+       ; infer_right = Fn.id
+       ; map =
+           Map.merge t1 t2 ~f:(fun ~key:_ ->
+             function
+             | `Left x | `Both (x, _) | `Right x -> Some x)
+       })
+;;

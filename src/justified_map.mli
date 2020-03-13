@@ -106,6 +106,8 @@ module Inserting : sig
         -> ('k, 'v, 'cmp, 'ph1) t
 end
 
+(* TODO: Unlike the Haskell version, perhaps we do not need to write this in
+   continuation-passing style. *)
 val inserting
   :  ('k, 'v, 'cmp, 'ph) t
   -> key:'k
@@ -119,4 +121,22 @@ val inserting_with
   -> data:'v
   -> combine:(old_data:'v -> new_data:'v -> 'v)
   -> f:(('k, 'v, 'cmp, 'ph) Inserting.t -> 'a)
+  -> 'a
+
+(** {2 Unions} *)
+
+module Unioning : sig
+  type ('k, 'v, 'cmp, 'ph_l, 'ph_r) t =
+    | T :
+        { infer_left : ('k, 'ph_l) Key.t -> ('k, 'ph_union) Key.t
+        ; infer_right : ('k, 'ph_r) Key.t -> ('k, 'ph_union) Key.t
+        ; map : ('k, 'v, 'cmp, 'ph_union) justified_map
+        }
+        -> ('k, 'v, 'cmp, 'ph_l, 'ph_r) t
+end
+
+val unioning
+  :  ('k, 'v, 'cmp, 'ph_l) t
+  -> ('k, 'v, 'cmp, 'ph_r) t
+  -> f:(('k, 'v, 'cmp, 'ph_l, 'ph_r) Unioning.t -> 'a)
   -> 'a
